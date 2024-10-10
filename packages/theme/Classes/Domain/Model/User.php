@@ -17,7 +17,9 @@ declare(strict_types=1);
 
 namespace Workshop\Theme\Domain\Model;
 
+use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+use TYPO3\CMS\Extbase\Persistence\Generic\LazyLoadingProxy;
 
 class User extends AbstractEntity
 {
@@ -30,6 +32,12 @@ class User extends AbstractEntity
      * @var string
      */
     protected string $lastname = '';
+
+    /**
+     * @Extbase\ORM\Lazy
+     * @var FileReference|LazyLoadingProxy|null
+     */
+    protected null|FileReference|LazyLoadingProxy $avatar = null;
 
     /**
      * @return string
@@ -69,5 +77,25 @@ class User extends AbstractEntity
     public function getFullName(): string
     {
         return $this->lastname . ', ' . $this->firstname;
+    }
+
+    /**
+     * @return FileReference|null
+     */
+    public function getAvatar(): ?FileReference
+    {
+        if ($this->avatar instanceof LazyLoadingProxy) {
+            $this->avatar = $this->avatar->_loadRealInstance();
+        }
+
+        return $this->avatar;
+    }
+
+    /**
+     * @param FileReference $avatar
+     */
+    public function setAvatar(FileReference $avatar): void
+    {
+        $this->avatar = $avatar;
     }
 }
